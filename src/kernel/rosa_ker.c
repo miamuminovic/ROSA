@@ -94,7 +94,7 @@ void ROSA_init(void)
 	//...
 	interruptInit();
 	system_ticks = 0;
-	timerInit(100);
+	timerInit(1);
 	timerStart();
 	//...
 }
@@ -108,6 +108,7 @@ void ROSA_init(void)
  **********************************************************/
 void ROSA_tcbCreate(tcb * tcbTask, char tcbName[NAMESIZE], void *tcbFunction, int * tcbStack, int tcbStackSize)
 {
+	interruptDisable();
 	int i;
 
 	//Initialize the tcb with the correct values
@@ -133,6 +134,7 @@ void ROSA_tcbCreate(tcb * tcbTask, char tcbName[NAMESIZE], void *tcbFunction, in
 
 	//Initialize context.
 	contextInit(tcbTask);
+	interruptEnable();
 }
 
 
@@ -168,6 +170,7 @@ void ROSA_tcbCreate(tcb * tcbTask, char tcbName[NAMESIZE], void *tcbFunction, in
 // insert into the ready list
 void ROSA_tcbInstall(tcb * tcbTask)
 {
+	interruptDisable();
 	// check if tcbTask is null is missing
 	if(TCBLIST == NULL)
 	{
@@ -196,11 +199,13 @@ void ROSA_tcbInstall(tcb * tcbTask)
 			TCBLIST_end = tcbTask;
 		}		
 	}
+	interruptEnable();
 }
 
 // removes a tcb from the ready list
 void ROSA_tcbUninstall(tcb * tcbTask)
 {
+	interruptDisable();
 	// if empty OR if only one element
 	if(TCBLIST == TCBLIST_end)
 	{
@@ -224,10 +229,12 @@ void ROSA_tcbUninstall(tcb * tcbTask)
 		tcbTask->nexttcb = NULL;
 		tcbTask->prevtcb = NULL;
 	}
+	interruptEnable();
 }
 
 void ROSA_tcbSuspend(tcb * tcbTask)
 {
+	interruptDisable();
 	// check if tcbTask is null is missing
 	if(SUSPENDEDLIST == NULL)
 	{
@@ -256,10 +263,12 @@ void ROSA_tcbSuspend(tcb * tcbTask)
 			SUSPENDEDLIST_end = tcbTask;
 		}
 	}
+	interruptEnable();
 }
 
 void ROSA_tcbUnsuspend(tcb * tcbTask)
 {
+	interruptDisable();
 	// if empty OR if only one element
 	if(SUSPENDEDLIST == SUSPENDEDLIST_end)
 	{
@@ -283,6 +292,7 @@ void ROSA_tcbUnsuspend(tcb * tcbTask)
 		tcbTask->nexttcb = NULL;
 		tcbTask->prevtcb = NULL;
 	}
+	interruptEnable();
 }
 
 //void ROSA_tcbInstall(tcb * tcbTask)
@@ -305,6 +315,7 @@ void ROSA_tcbUnsuspend(tcb * tcbTask)
 
 int16_t ROSA_taskCreate(ROSA_taskHandle_t * th, char * id, void * taskFunc, uint32_t stackSize, uint8_t priority)
 {
+	interruptDisable();
 	int16_t result = -1;
 	
 	(*th) = (tcb*)calloc(1,sizeof(tcb));
@@ -316,12 +327,13 @@ int16_t ROSA_taskCreate(ROSA_taskHandle_t * th, char * id, void * taskFunc, uint
 		
 	ROSA_tcbCreate(*th, id, taskFunc, dynamic_stack, stackSize);
 	ROSA_tcbInstall(*th);
-	
+	interruptEnable();
 	return result;
 }
 
 int16_t ROSA_taskDelete(ROSA_taskHandle_t th)
 {
+	interruptDisable();
 	uint16_t result = -1;
 		
 	if( th )
@@ -356,7 +368,7 @@ int16_t ROSA_taskDelete(ROSA_taskHandle_t th)
 		
 		result = 0;
 	}
-	
+	interruptEnable();
 	return result;
 }
 

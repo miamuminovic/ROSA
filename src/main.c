@@ -57,7 +57,8 @@ void task1(void)
 	while(1) {
 		ledOn(LED0_GPIO);
 		ledOff(LED1_GPIO);
-		delay_ms(abs(1000 - ROSA_getTickCount()));
+		//delay_ms(abs(1000 - ROSA_getTickCount()));
+		ROSA_delay(100);
 		ROSA_yield();
 	}
 }
@@ -72,7 +73,8 @@ void task2(void)
 	while(1) {
 		ledOff(LED0_GPIO);
 		ledOn(LED1_GPIO);
-		delay_ms(abs(ROSA_getTickCount() - 1000));
+		ROSA_delay(100);
+		//delay_ms(abs(ROSA_getTickCount() - 1000));
 		ROSA_yield();
 	}
 }
