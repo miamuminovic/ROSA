@@ -28,6 +28,11 @@
 #include "kernel/rosa_ker.h"
 #include "kernel/rosa_tim.h"
 
+uint64_t roundRobinTicks = 10;
+uint64_t roundRobinCounter = 0;
+
+tcb * ROUNDROBINEND = NULL;
+
 /***********************************************************
  * scheduler
  *
@@ -38,7 +43,8 @@
  **********************************************************/
 void scheduler(void)
 {
-	interruptDisable();
+	endCritical = 0;
+	//interruptDisable();
 	tcb * iterator = SUSPENDEDLIST;
 	uint64_t current_time = ROSA_getTickCount();
 	while( iterator != NULL && iterator->back_online_time <= current_time ) //for every suspended task that is now ready
@@ -46,18 +52,21 @@ void scheduler(void)
 		ROSA_tcbUnsuspend(iterator);
 		ROSA_tcbInstall(iterator);
 		iterator = SUSPENDEDLIST;
-		//if (SUSPENDEDLIST)
-		//{
-			//iterator = iterator->nexttcb;
-		//}
-		//else
-		//{
-			//iterator = NULL;
-		//}
+	}
+	if(ROUNDROBINEND != NULL && (idle_task_handle != EXECTASK))
+	{
+		roundRobinCounter++;
+		if(roundRobinCounter >= roundRobinTicks)
+		{
+			roundRobinCounter = 0;
+			ROSA_tcbUninstall(EXECTASK);
+			ROSA_tcbInstall(EXECTASK);
+		}
 	}
 	//Find the next task to execute
 	//EXECTASK = EXECTASK->nexttcb;
 	
 	EXECTASK=TCBLIST;
-	interruptEnable();
+	endCritical = 1;
+	//interruptEnable();
 }

@@ -41,7 +41,7 @@ tcb * TCBLIST_end;
 tcb * SUSPENDEDLIST;
 tcb * SUSPENDEDLIST_end;
 
-
+ROSA_taskHandle_t idle_task_handle;
 
 //Variable that defines whether critical section should end at the end of critical API functions
 extern int endCritical;
