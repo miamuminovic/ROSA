@@ -49,6 +49,8 @@ SUBDIRS :=  \
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS +=  \
 ../src/kernel/lists.c \
+../src/kernel/queue.c \
+../src/kernel/semaphore.c \
 ../src/main.c \
 ../src/kernel/rosa_int.c \
 ../src/kernel/rosa_ker.c \
@@ -66,6 +68,8 @@ ASM_SRCS +=
 
 OBJS +=  \
 src/kernel/lists.o \
+src/kernel/queue.o \
+src/kernel/semaphore.o \
 src/main.o \
 src/kernel/rosa_int.o \
 src/kernel/rosa_int_asm.o \
@@ -76,6 +80,8 @@ src/kernel/rosa_tim.o
 
 OBJS_AS_ARGS +=  \
 src/kernel/lists.o \
+src/kernel/queue.o \
+src/kernel/semaphore.o \
 src/main.o \
 src/kernel/rosa_int.o \
 src/kernel/rosa_int_asm.o \
@@ -86,6 +92,8 @@ src/kernel/rosa_tim.o
 
 C_DEPS +=  \
 src/kernel/lists.d \
+src/kernel/queue.d \
+src/kernel/semaphore.d \
 src/main.d \
 src/kernel/rosa_int.d \
 src/kernel/rosa_int_asm.d \
@@ -96,6 +104,8 @@ src/kernel/rosa_tim.d
 
 C_DEPS_AS_ARGS +=  \
 src/kernel/lists.d \
+src/kernel/queue.d \
+src/kernel/semaphore.d \
 src/main.d \
 src/kernel/rosa_int.d \
 src/kernel/rosa_int_asm.d \
@@ -119,6 +129,10 @@ LINKER_SCRIPT_DEP+=  \
 
 
 # AVR32/GNU C Compiler
+
+
+
+
 
 
 

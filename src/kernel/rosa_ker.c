@@ -60,6 +60,9 @@ tcb * SUSPENDEDLIST_end;
  **********************************************************/
 tcb * EXECTASK;
 
+//Variable that defines whether critical section should end at the end of critical API functions
+int endCritical=1;
+
 //Idle task creation
 ROSA_taskHandle_t idle_task_handle;
 void IDLE_TASK (void)
@@ -229,7 +232,8 @@ void ROSA_tcbUninstall(tcb * tcbTask)
 		tcbTask->nexttcb = NULL;
 		tcbTask->prevtcb = NULL;
 	}
-	interruptEnable();
+	if (endCritical)
+		interruptEnable();
 }
 
 void ROSA_tcbSuspend(tcb * tcbTask)

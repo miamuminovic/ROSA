@@ -35,6 +35,7 @@
 #include "drivers/led.h"
 #include "drivers/delay.h"
 #include "drivers/usart.h"
+#include "include/kernel/semaphore.h"
 
 //Include configuration
 #include "rosa_config.h"
@@ -46,6 +47,8 @@ ROSA_taskHandle_t task3_handle;
 ROSA_taskHandle_t task4_handle;
 ROSA_taskHandle_t task5_handle;
 
+
+ROSA_semaphoreHandle_t S1;
 
 /*************************************************************
  * Task1
@@ -149,6 +152,58 @@ void task5(void)
 	}
 }
 
+void taskA(void)
+{
+	while(1)
+	{
+		if (ROSA_semaphoreLock(S1)==0)
+		{
+			ledOn(LED0_GPIO);
+			ROSA_delay(1000);
+			ledOff(LED0_GPIO);
+			ROSA_semaphoreUnlock(S1);
+			
+		}
+		ROSA_delay(2000);
+		
+		
+	}
+}
+
+void taskB(void)
+{
+	ROSA_delay(10);
+	while(1)
+	{
+		if (ROSA_semaphoreLock(S1)==0)
+		{
+			ledOn(LED1_GPIO);
+			ROSA_delay(2000);
+			ledOff(LED1_GPIO);
+			ROSA_semaphoreUnlock(S1);
+		}
+		ROSA_delay(2000);
+	}
+}
+
+void taskC(void)
+{
+	ROSA_delay(20);
+	while(1)
+	{
+		if (ROSA_semaphoreLock(S1)==0)
+		{
+			ledOn(LED2_GPIO);
+			ROSA_delay(2000);
+			ledOff(LED2_GPIO);
+			ROSA_semaphoreUnlock(S1);
+		}
+		ROSA_delay(2000);
+	}
+}
+
+
+
 /*************************************************************
  * Main function
  ************************************************************/
@@ -156,13 +211,16 @@ int main(void)
 {
 	//Initialize the ROSA kernel
 	ROSA_init();
+	ROSA_semaphoreCreate(&S1,1);
 
 
 	//ROSA_taskCreate(& task1_handle, "tsk1", task1, 0x40, 5);
 	//ROSA_taskCreate(& task2_handle, "tsk2", task2, 0x40, 3);
-	ROSA_taskCreate(& task3_handle, "tsk3", task3, 0x40, 1);
+	//ROSA_taskCreate(& task3_handle, "tsk3", task3, 0x40, 1);
 	//ROSA_taskCreate(& task4_handle, "tsk4", task4, 0x40, 1);
-	ROSA_taskCreate(& task5_handle, "tsk5", task5, 0x40, 1);
+	ROSA_taskCreate(& task5_handle, "tsk5", taskA, 0x40, 3);
+	ROSA_taskCreate(& task2_handle, "tsk5", taskB, 0x40, 2);
+	ROSA_taskCreate(& task4_handle, "tsk5", taskC, 0x40, 1);
 	
 	//Start the ROSA kernel
 	ROSA_start();

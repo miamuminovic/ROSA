@@ -4,6 +4,10 @@
 
 src\kernel\lists.c
 
+src\kernel\queue.c
+
+src\kernel\semaphore.c
+
 src\main.c
 
 src\kernel\rosa_int.c

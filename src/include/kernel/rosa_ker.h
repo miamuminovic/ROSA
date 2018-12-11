@@ -42,6 +42,11 @@ tcb * SUSPENDEDLIST;
 tcb * SUSPENDEDLIST_end;
 
 
+
+//Variable that defines whether critical section should end at the end of critical API functions
+extern int endCritical;
+
+
 /***********************************************************
  * Kernel low level context switch functions
  ***********************************************************/

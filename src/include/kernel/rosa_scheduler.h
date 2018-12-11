@@ -27,6 +27,12 @@
 #ifndef _scheduler_H_
 #define _scheduler_H_
 
+//#define roundRobinTicks 15
+uint64_t roundRobinTicks = 10;
+uint64_t roundRobinCounter = 0;
+
+tcb * ROUNDROBINEND = NULL;
+
 #include "kernel/rosa_ker.h"
 /***********************************************************
  * scheduler
