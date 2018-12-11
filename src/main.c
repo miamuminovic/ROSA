@@ -102,10 +102,12 @@ void task3(void)
  ************************************************************/
 void task4(void)
 {
+	uint64_t current_ticks;
+	current_ticks = ROSA_getTickCount(); 
 	while(1) {
 		ledToggle(LED3_GPIO);
-		delay_ms(200);
-		ROSA_yield();
+		ROSA_delayUntil(&current_ticks,500);
+		//ROSA_yield();
 	}
 }
 
@@ -115,30 +117,35 @@ void task4(void)
  ************************************************************/
 void task5(void)
 {
+	//ROSA_delayAbsolute(5000);
+	
 	while(1)
 	{
 		//set green LED only
+		
 		ledOff(LED4_GPIO);
 		ledOn(LED5_GPIO);
+		
 		ROSA_taskDelete(task4_handle);
+		
 		//blink LED4 on board
 		//ROSA_tcbUninstall(task3_handle);
 		//ROSA_tcbSuspend(task3_handle);
-		delay_ms(1000);
-		//ROSA_delay(10);
+		ROSA_delay(1000);
 		
 		//possibly make critical sections such that system ticks will still increment properly (if possible)
 		
 		
-		ROSA_taskCreate(& task4_handle, "tsk4", task4, 0x40, 4); 
-		 //stop blinking LED4 on board
+		ROSA_taskCreate(& task4_handle, "tsk4", task4, 0x40, 4);
+		//stop blinking LED4 on board
 		//ROSA_tcbUnsuspend(task3_handle);
 		//ROSA_tcbInstall(task3_handle);
 		ledOff(LED5_GPIO);	//set red LED only
 		ledOn(LED4_GPIO);
 		//delay_ms(1000);
-		ROSA_delay(10);
-		ROSA_yield();
+		ROSA_delay(5000);
+		
+		//ROSA_yield();
 	}
 }
 

@@ -394,9 +394,9 @@ int16_t ROSA_delayUntil(uint64_t* lastWakeTime, uint64_t ticks)
 	//insert_by_back_online_time(suspended_list, EXECTASK);
 	interruptDisable();
 	ROSA_tcbUninstall(EXECTASK);
-	//EXECTASK->back_online_time=*lastWakeTime+ticks;
-	//*lastWakeTime=*lastWakeTime+ticks;
-	EXECTASK->back_online_time=ROSA_getTickCount()+ticks;
+	EXECTASK->back_online_time=*lastWakeTime+ticks;
+	*lastWakeTime=*lastWakeTime+ticks;
+	//EXECTASK->back_online_time=ROSA_getTickCount()+ticks;
 	ROSA_tcbSuspend(EXECTASK);
 	interruptEnable();
 	ROSA_yield();
