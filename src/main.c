@@ -61,7 +61,7 @@ void task1(void)
 		ledOn(LED0_GPIO);
 		ledOff(LED1_GPIO);
 		//delay_ms(abs(1000 - ROSA_getTickCount()));
-		ROSA_delay(900);
+		ROSA_delay(9);
 	}
 }
 
@@ -75,7 +75,7 @@ void task2(void)
 	while(1) {
 		ledOff(LED0_GPIO);
 		ledOn(LED1_GPIO);
-		ROSA_delay(400);
+		ROSA_delay(10);
 		//delay_ms(abs(ROSA_getTickCount() - 1000));
 	}
 }
@@ -87,13 +87,14 @@ void task2(void)
 void task3(void)
 {
 	//uint64_t currentTime = ROSA_getTickCount();
-	while(1) {
+	while(1)
+	{
 		ledToggle(LED2_GPIO);
-		ROSA_delay(30);
+		ROSA_delay(500);
 		//ROSA_delayUntil(&currentTime, 30);
 		
 		//delay_ms(100);
-		ROSA_yield();
+		//ROSA_yield();
 	}
 }
 
@@ -214,11 +215,13 @@ int main(void)
 
 	ROSA_taskCreate(& task1_handle, "tsk1", task1, 0x40, 3);
 	ROSA_taskCreate(& task2_handle, "tsk2", task2, 0x40, 3);
-	//ROSA_taskCreate(& task3_handle, "tsk3", task3, 0x40, 1);
-	//ROSA_taskCreate(& task4_handle, "tsk4", task4, 0x40, 1);
+	ROSA_taskCreate(& task3_handle, "tsk3", task3, 0x40, 2);
+	ROSA_taskCreate(& task4_handle, "tsk4", task4, 0x40, 4);
 	//ROSA_taskCreate(& task5_handle, "tsk5", taskA, 0x40, 3);
 	//ROSA_taskCreate(& task2_handle, "tsk5", taskB, 0x40, 2);
 	//ROSA_taskCreate(& task4_handle, "tsk5", taskC, 0x40, 1);
+	
+	timerStart();
 	
 	//Start the ROSA kernel
 	ROSA_start();

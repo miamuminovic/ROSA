@@ -98,7 +98,6 @@ void ROSA_init(void)
 	interruptInit();
 	system_ticks = 0;
 	timerInit(1);
-	timerStart();
 	//...
 }
 
@@ -137,7 +136,8 @@ void ROSA_tcbCreate(tcb * tcbTask, char tcbName[NAMESIZE], void *tcbFunction, in
 
 	//Initialize context.
 	contextInit(tcbTask);
-	interruptEnable();
+	if (endCritical)
+		interruptEnable();
 }
 
 
@@ -263,25 +263,50 @@ void ROSA_tcbSuspend(tcb * tcbTask)
 		tcbTask->prevtcb = tcbTask;
 		SUSPENDEDLIST_end = tcbTask;
 	}
+	// add before the beginning
 	else if(tcbTask->back_online_time < SUSPENDEDLIST->back_online_time)
 	{
 		insert_after(SUSPENDEDLIST_end, tcbTask);
 		SUSPENDEDLIST = tcbTask;
 	}
+	// add after the end
+	else if(tcbTask->back_online_time >= SUSPENDEDLIST_end->back_online_time)
+	{
+		insert_after(SUSPENDEDLIST_end, tcbTask);
+		SUSPENDEDLIST_end = tcbTask;
+	}
 	else
 	{
 		tcb * iterator = SUSPENDEDLIST;
-		while(iterator && iterator->back_online_time <= tcbTask->back_online_time && iterator!=SUSPENDEDLIST_end)
+		while(iterator && iterator->back_online_time <= tcbTask->back_online_time)
 		{
 			iterator = iterator->nexttcb;
 		}
-
+		
 		insert_after(iterator->prevtcb, tcbTask);
+		
+		//if (iterator == SUSPENDEDLIST_end)
+			//insert_after(iterator, tcbTask);
+		//else 
+			//insert_after(iterator->prevtcb, tcbTask);
 		//insert_by_back_online_time(SUSPENDEDLIST, tcbTask);
-		if(SUSPENDEDLIST->prevtcb == tcbTask)
-		{
-			SUSPENDEDLIST_end = tcbTask;
-		}
+
+		//if(iterator == SUSPENDEDLIST_end)
+		//{
+			//if( tcbTask->back_online_time < iterator->back_online_time )
+			//{
+				//insert_after(iterator->prevtcb, tcbTask);
+			//}
+			//else
+			//{
+				//insert_after(iterator, tcbTask);
+				//SUSPENDEDLIST_end = iterator;
+			//}
+		//}		
+		//else
+		//{
+			//insert_after(iterator->prevtcb, tcbTask);
+		//}
 	}
 	if (endCritical)
 		interruptEnable();
@@ -337,6 +362,7 @@ void ROSA_tcbUnsuspend(tcb * tcbTask)
 
 int16_t ROSA_taskCreate(ROSA_taskHandle_t * th, char * id, void * taskFunc, uint32_t stackSize, uint8_t priority)
 {
+	endCritical = 0;
 	interruptDisable();
 	int16_t result = -1;
 	
@@ -350,12 +376,16 @@ int16_t ROSA_taskCreate(ROSA_taskHandle_t * th, char * id, void * taskFunc, uint
 	ROSA_tcbCreate(*th, id, taskFunc, dynamic_stack, stackSize);
 	ROSA_tcbInstall(*th);
 	if (endCritical)
+	{
+		endCritical = 1;
 		interruptEnable();
+	}
 	return result;
 }
 
 int16_t ROSA_taskDelete(ROSA_taskHandle_t th)
 {
+	endCritical = 0;
 	interruptDisable();
 	uint16_t result = -1;
 		
@@ -392,7 +422,10 @@ int16_t ROSA_taskDelete(ROSA_taskHandle_t th)
 		result = 0;
 	}
 	if (endCritical)
+	{
+		endCritical = 1;
 		interruptEnable();
+	}
 	return result;
 }
 

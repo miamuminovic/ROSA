@@ -53,13 +53,15 @@ void scheduler(void)
 		ROSA_tcbInstall(iterator);
 		iterator = SUSPENDEDLIST;
 	}
-	if(ROUNDROBINEND != NULL && (idle_task_handle != EXECTASK))
+	if(roundRobinTicks != 0 && ROUNDROBINEND != NULL && EXECTASK->effective_priority == ROUNDROBINEND->effective_priority && (idle_task_handle != EXECTASK))
 	{
 		roundRobinCounter++;
 		if(roundRobinCounter >= roundRobinTicks)
 		{
 			roundRobinCounter = 0;
 			ROSA_tcbUninstall(EXECTASK);
+			//insert_after(ROUNDROBINEND, EXECTASK);
+			//ROUNDROBINEND = EXECTASK;
 			ROSA_tcbInstall(EXECTASK);
 		}
 	}
